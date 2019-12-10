@@ -23,7 +23,7 @@
   "author": "wang bin",
   "license": "MIT",
   "dependencies": {
-    "bin-ui": "^2.3.5",
+    "bin-ui": "^2.3.8",
     "vue": "^2.6.10"
   },
   "peerDependencies": {
