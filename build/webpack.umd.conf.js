@@ -13,8 +13,8 @@ module.exports = merge(webpackBaseConfig, {
   output: {
     path: path.resolve(__dirname, '../lib'),
     publicPath: '/lib/',
-    filename: 'bin-lib.js',
-    library: 'bin-lib',
+    filename: 'bin-ui.js',
+    library: 'bin-ui',
     libraryExport: 'default',
     libraryTarget: 'umd',
     umdNamedDefine: true

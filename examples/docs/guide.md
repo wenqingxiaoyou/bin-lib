@@ -2,7 +2,6 @@
 
 组件库介绍，以下内容为参考修改，发布时需按需修改
 
-- [bin-cli](https://github.com/wangbin3162/bin-cli/) 脚手架构建工具
 - [bin-animation](https://github.com/wangbin3162/bin-animation/) css3动画库
 - [bin-keyframe-animation](https://github.com/wangbin3162/bin-keyframe-animation/) js关键帧动画库
 - [bin-admin](https://github.com/wangbin3162/bin-admin/) 后台管理系统admin2.0版本

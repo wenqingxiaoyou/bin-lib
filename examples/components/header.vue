@@ -4,32 +4,31 @@
       <div class="left" style="width: 480px;" flex="main:justify cross:center">
         <div class="logo"></div>
         <b-select style="width: 220px;" placeholder="查询组件" filterable v-model="current"
-                  @on-change="handleComponentChange" clearable size="large">
+                  @on-change="handleComponentChange" clearable>
           <b-option v-for="item in components" :value="item.value" :key="item.value">{{ item.label }}</b-option>
         </b-select>
       </div>
       <div class="link">
         <router-link :to="{name: 'guide'}" class="active">指南</router-link>
-        <router-link :to="{name: 'button'}" class="active">组件</router-link>
         <b-dropdown>
           <a href="#" class="active" @click.prevent>生态
             <i class="iconfont icon-ios-arrow-down"></i>
           </a>
           <b-dropdown-menu slot="list">
-            <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-cli')">
-              bin-cli
+            <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-animation')">
+              bin-animation
+            </b-dropdown-item>
+            <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-keyframe-animation')">
+              bin-keyframe-animation
+            </b-dropdown-item>
+            <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-tree-org')">
+              bin-tree-org
             </b-dropdown-item>
             <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-admin')">
               bin-admin
             </b-dropdown-item>
             <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-data')">
               bin-data
-            </b-dropdown-item>
-            <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-animation')">
-              bin-animation
-            </b-dropdown-item>
-            <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-keyframe-animation')">
-              bin-keyframe-animation
             </b-dropdown-item>
             <b-dropdown-item @click.native="goTo('https://github.com/wangbin3162/bin-static-web/')">
               bin-static-web
@@ -50,18 +49,18 @@
 
   export default {
     name: 'MainHeader',
-    data () {
+    data() {
       return {
         components: [],
         current: ''
       }
     },
-    created () {
+    created() {
       this.getComponentsOptions()
     },
     watch: {
       $route: {
-        handler () {
+        handler() {
           setTimeout(() => {
             this.current = ''
           }, 300)
@@ -70,10 +69,10 @@
       }
     },
     methods: {
-      goTo (url) {
+      goTo(url) {
         this.$util.open(url, true)
       },
-      getComponentsOptions () {
+      getComponentsOptions() {
         let routes = []
         Object.keys(navConf).forEach((header) => {
           routes = routes.concat(navConf[header])
@@ -86,7 +85,7 @@
               routes = routes.concat(route.items)
             } else {
               // 如果是组件路由
-              if (['guide', 'install', 'start', 'logs'].indexOf(route.name) === -1) {
+              if (['guide', 'install', 'start', 'theme', 'logs'].indexOf(route.name) === -1) {
                 this.components.push({
                   value: route.path,
                   label: route.desc
@@ -97,7 +96,7 @@
         }
         addComponent(routes)
       },
-      handleComponentChange (val) {
+      handleComponentChange(val) {
         if (!val || val.length === 0) {
           return
         }
@@ -112,11 +111,11 @@
 <style lang="stylus">
   .page-header {
     background-color: #fff;
-    box-shadow: 0 10px 60px 0 rgba(29, 29, 31, 0.07);
-    opacity: 0.98;
-    position: relative !important;
+    border-bottom: 1px solid #eeeeee;
+    position: fixed !important;
     top: 0;
     left: 0;
+    right: 0;
     width: 100%;
     height: 80px;
     transition: all .3s;
@@ -155,6 +154,12 @@
         .bin-dropdown {
           line-height: 1.5;
         }
+      }
+    }
+    .bin-select-single .bin-select-selection {
+      border-color: transparent;
+      .bin-select-arrow {
+        opacity: 0;
       }
     }
   }

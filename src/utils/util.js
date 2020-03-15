@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 const util = {}
 
 /**
@@ -11,8 +13,9 @@ util.title = function (title) {
 /**
  * @description 打开新页面
  * @param {String} url 地址
+ * @param target
  */
-util.open = function (url, target) {
+util.open = function (url, target = false) {
   let a = document.createElement('a')
   a.setAttribute('href', url)
   if (target) {
@@ -64,11 +67,6 @@ util.parseTime = function (time, cFormat) {
   return time_str
 }
 
-// 这个是用来获取当前时间戳的
-function _now () {
-  return +new Date()
-}
-
 /**
  * 防抖函数，返回函数连续调用时，空闲时间必须大于或等于 wait，func 才会执行
  *
@@ -110,72 +108,6 @@ util.debounce = function (func, wait = 50, immediate = true) {
       clearTimeout(timer)
       timer = later()
     }
-  }
-}
-
-/**
- * underscore 节流函数，返回函数连续调用时，func 执行频率限定为 次 / wait
- *
- * @param  {function}   func      回调函数
- * @param  {number}     wait      表示时间窗口的间隔
- * @param  {object}     options   如果想忽略开始函数的的调用，传入{leading: false}。
- *                                如果想忽略结尾函数的调用，传入{trailing: false}
- *                                两者不能共存，否则函数不能执行
- * @return {function}             返回客户调用函数
- */
-util.throttle = function (func, wait, options = {}) {
-  let context, args, result
-  let timeout = null
-  // 之前的时间戳
-  let previous = 0
-  // 如果 options 没传则设为空对象
-  if (!options) options = {}
-  // 定时器回调函数
-  let later = function () {
-    // 如果设置了 leading，就将 previous 设为 0
-    // 用于下面函数的第一个 if 判断
-    previous = options.leading === false ? 0 : _now()
-    // 置空一是为了防止内存泄漏，二是为了下面的定时器判断
-    timeout = null
-    result = func.apply(context, args)
-    if (!timeout) context = args = null
-  }
-  return function () {
-    // 获得当前时间戳
-    let now = _now()
-    // 首次进入前者肯定为 true
-    // 如果需要第一次不执行函数
-    // 就将上次时间戳设为当前的
-    // 这样在接下来计算 remaining 的值时会大于0
-    if (!previous && options.leading === false) previous = now
-    // 计算剩余时间
-    let remaining = wait - (now - previous)
-    context = this
-    args = arguments
-    // 如果当前调用已经大于上次调用时间 + wait
-    // 或者用户手动调了时间
-    // 如果设置了 trailing，只会进入这个条件
-    // 如果没有设置 leading，那么第一次会进入这个条件
-    // 还有一点，你可能会觉得开启了定时器那么应该不会进入这个 if 条件了
-    // 其实还是会进入的，因为定时器的延时
-    // 并不是准确的时间，很可能你设置了2秒
-    // 但是他需要2.2秒才触发，这时候就会进入这个条件
-    if (remaining <= 0 || remaining > wait) {
-      // 如果存在定时器就清理掉否则会调用二次回调
-      if (timeout) {
-        clearTimeout(timeout)
-        timeout = null
-      }
-      previous = now
-      result = func.apply(context, args)
-      if (!timeout) context = args = null
-    } else if (!timeout && options.trailing !== false) {
-      // 判断是否设置了定时器和 trailing
-      // 没有的话就开启一个定时器
-      // 并且不能不能同时设置 leading 和 trailing
-      timeout = setTimeout(later, remaining)
-    }
-    return result
   }
 }
 
@@ -232,13 +164,15 @@ util.getWaterMark = function (str) {
   return canvas
 }
 
+util.deepClone = deepCopy
+
 // 一个值是否在列表中
-export function oneOf (value, validList) {
+export function oneOf(value, validList) {
   return validList.indexOf(value) > -1
 }
 
 // Find components upward
-export function findComponentUpward (context, componentName, componentNames) {
+export function findComponentUpward(context, componentName, componentNames) {
   if (typeof componentName === 'string') {
     componentNames = [componentName]
   } else {
@@ -255,7 +189,7 @@ export function findComponentUpward (context, componentName, componentNames) {
 }
 
 // Find component downward
-export function findComponentDownward (context, componentName) {
+export function findComponentDownward(context, componentName) {
   const childrens = context.$children
   let children = null
 
@@ -275,7 +209,7 @@ export function findComponentDownward (context, componentName) {
 }
 
 // Find components downward
-export function findComponentsDownward (context, componentName) {
+export function findComponentsDownward(context, componentName) {
   return context.$children.reduce((components, child) => {
     if (child.$options.name === componentName) components.push(child)
     const foundChilds = findComponentsDownward(child, componentName)
@@ -284,7 +218,7 @@ export function findComponentsDownward (context, componentName) {
 }
 
 // Find components upward
-export function findComponentsUpward (context, componentName) {
+export function findComponentsUpward(context, componentName) {
   let parents = []
   const parent = context.$parent
   if (parent) {
@@ -295,7 +229,17 @@ export function findComponentsUpward (context, componentName) {
   }
 }
 
-function typeOf (obj) {
+// Find brothers components
+export function findBrothersComponents(context, componentName, exceptMe = true) {
+  let res = context.$parent.$children.filter(item => {
+    return item.$options.name === componentName
+  })
+  let index = res.findIndex(item => item._uid === context._uid)
+  if (exceptMe) res.splice(index, 1)
+  return res
+}
+
+function typeOf(obj) {
   const toString = Object.prototype.toString
   const map = {
     '[object Boolean]': 'boolean',
@@ -312,7 +256,7 @@ function typeOf (obj) {
   return map[toString.call(obj)]
 }
 
-export function deepCopy (data) {
+export function deepCopy(data) {
   const t = typeOf(data)
   let o
 

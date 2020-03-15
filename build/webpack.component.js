@@ -4,18 +4,16 @@ const ProgressBarPlugin = require('progress-bar-webpack-plugin')
 const VueLoaderPlugin = require('vue-loader/lib/plugin')
 const webpackBaseConfig = require('./webpack.base.conf')
 
+const Components = require('../components.json')
+
 module.exports = merge(webpackBaseConfig, {
   mode: 'production',
-  entry: {
-    main: './src/index.js'
-  },
+  entry: Components,
   output: {
     path: path.resolve(__dirname, '../lib'),
     publicPath: '/lib/',
-    filename: 'bin-ui.common.js',
+    filename: '[name].js',
     chunkFilename: '[id].js',
-    libraryExport: 'default',
-    library: 'bin-ui',
     libraryTarget: 'commonjs2'
   },
   externals: {
@@ -29,9 +27,7 @@ module.exports = merge(webpackBaseConfig, {
   performance: {
     hints: false
   },
-  stats: {
-    children: false
-  },
+  stats: 'none',
   optimization: {
     minimize: false
   },
